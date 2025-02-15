@@ -1,1 +1,33 @@
 # Database Engineering
+---
+## Table of Contents
+---
+### Labs
+1. [Preparing for Database Engineering Lab](./Labs/README.md)
+2. [Understanding SQL](./Labs/Lab-0/README.md)
+3. [Introducing MySQL](./Labs/Lab-1/README.md)
+4. [Working with MySQL](./Labs/Lab-2/README.md)
+5. [Retrieving Data](./Labs/Lab-3/README.md)
+6. [Sorting Retrieved Data](./Labs/Lab-4/README.md)
+7. [Filtering Data](./Labs/Lab-5/README.md)
+8. [Advanced Data Filtering](./Labs/Lab-6/README.md)
+9. [Using Wildcard Filtering](./Labs/Lab-7/README.md)
+10. [Searching Using Regular Expressions](./Labs/Lab-8/README.md)
+11. [Creating Calculated Fields](./Labs/Lab-9/README.md)
+12. [Using Data Manipulation Functions](./Labs/Lab-10/README.md)
+13. [Summarizing Data](./Labs/Lab-11/README.md)
+14. [Grouping Data](./Labs/Lab-12/README.md)
+15. [Working with Subqueries](./Labs/Lab-13/README.md)
+16. [Joining Tables](./Labs/Lab-14/README.md)
+17. [Creating Advanced Joins](./Labs/Lab-15/README.md)
+18. [Combining Queries](./Labs/Lab-16/README.md)
+19. [Full-Text Searching](./Labs/Lab-17/README.md)
+20. [Inserting Data](./Labs/Lab-18/README.md)
+21. [Updating and Deleting](./Labs/Lab-19/README.md)
+22. [Creating and Manipulating Tables](./Labs/Lab-20/README.md)
+23. [Using Views](./Labs/Lab-21/README.md)
+24. [Stored Procedures](./Labs/Lab-22/README.md)
+25. [Using Cursors](./Labs/Lab-23/README.md)
+26. [Using Triggers](./Labs/Lab-24/README.md)
+27. [Managing Transaction Processing](./Labs/Lab-25/README.md)
+28. [Globalization and Localization](./Labs/Lab-26/README.md)

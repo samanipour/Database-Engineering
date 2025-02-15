@@ -1,200 +1,223 @@
-# **Inserting Data**
+# **Updating and Deleting**
 
 ## **Objective**
-This manual will guide you through **inserting data** into MySQL tables using the `INSERT` statement. Students will learn how to insert complete rows, insert multiple rows, and use `INSERT SELECT` to insert data retrieved from other tables.
+This manual will guide you through **updating and deleting data** in MySQL using the `UPDATE` and `DELETE` statements. It includes updating specific rows, updating multiple columns, and safely deleting rows while avoiding accidental data loss.
 
 ---
 
-## **Step 1: Understanding Data Insertion**
-1. **What Is Data Insertion?**
-   - **Inserting data** involves adding **new rows** to a table.
-   - This is done using the `INSERT` statement.
+## **Step 1: Understanding Data Modification**
+1. **Why Update and Delete Data?**
+   - **Updating** allows modifying existing records without adding new rows.
+   - **Deleting** removes data that is no longer needed, keeping the database clean.
 
-2. **Types of Insertion**
-   - **Complete Row Insertion**: Inserting values for **all columns**.
-   - **Partial Row Insertion**: Inserting values for **some columns**.
-   - **Multiple Row Insertion**: Inserting **multiple rows** in one statement.
-   - **Inserting Retrieved Data**: Using `INSERT SELECT` to insert **query results** into a table.
+2. **Important Considerations**
+   - Be **careful with `UPDATE` and `DELETE` statements**, as they **permanently change** the data.
+   - Always **use `WHERE` clauses** to specify the rows to modify or delete. **Omitting `WHERE`** affects **all rows**.
 
-3. **When to Use Data Insertion?**
-   - When **adding new records** to a database, such as:
-     - **Customer information** into a `customers` table.
-     - **New products** into an `inventory` table.
-     - **Order details** into an `orders` table.
+3. **Common Use Cases**
+   - Updating customer information (e.g., email or address).
+   - Deleting outdated or incorrect records.
+
+4. **Caution: Risk of Data Loss**
+   - Accidentally **omitting `WHERE`** clauses can **update or delete all rows** in a table.
+   - Always **double-check** `UPDATE` and `DELETE` statements before executing them.
 
 ---
 
-## **Step 2: Inserting Complete Rows**
+## **Step 2: Updating Data Using UPDATE Statement**
 1. **Purpose**
-   - Insert data for **all columns** in a table.
+   - The `UPDATE` statement is used to **modify existing rows** in a table.
 
 2. **Syntax**
    ```sql
-   INSERT INTO table_name
-   VALUES (value1, value2, ..., valueN);
-   ```
-   - Values **must match the order** of the columns in the table definition.
-
-3. **Example: Inserting a Complete Row**
-   ```sql
-   INSERT INTO customers
-   VALUES (NULL,
-           'Pep E. LaPew',
-           '100 Main Street',
-           'Los Angeles',
-           'CA',
-           '90046',
-           'USA',
-           NULL,
-           NULL);
-   ```
-   - `NULL` is used for columns that allow it.
-   - MySQL **auto-increments** `cust_id` because it is set as an `AUTO_INCREMENT` column.
-
-4. **Output**
-   - `INSERT` statements **do not generate output**.
-   - Use `SELECT` to **verify the insertion**:
-     ```sql
-     SELECT * FROM customers WHERE cust_name = 'Pep E. LaPew';
-     ```
-
-5. **Tip: Specifying Column Names**
-   - It is **safer** to specify column names to **avoid dependency** on the column order:
-     ```sql
-     INSERT INTO customers (cust_name, cust_address, cust_city, cust_state, cust_zip, cust_country)
-     VALUES ('Pep E. LaPew', '100 Main Street', 'Los Angeles', 'CA', '90046', 'USA');
-     ```
-
----
-
-## **Step 3: Inserting Partial Rows**
-1. **Purpose**
-   - Insert data for **some columns** while leaving others as `NULL` or with default values.
-
-2. **Syntax**
-   ```sql
-   INSERT INTO table_name (column1, column2, ..., columnN)
-   VALUES (value1, value2, ..., valueN);
-   ```
-   - Only **specified columns** receive values.
-   - Other columns get **default values** or `NULL`.
-
-3. **Example: Inserting a Partial Row**
-   ```sql
-   INSERT INTO customers (cust_name, cust_address, cust_city, cust_country)
-   VALUES ('Wile E. Coyote', 'Desert Road', 'Albuquerque', 'USA');
-   ```
-   - Only 4 columns are specified.
-   - `cust_id` is auto-incremented, and other unspecified columns receive `NULL` or default values.
-
-4. **Output**
-   - Use `SELECT` to check the new record:
-     ```sql
-     SELECT * FROM customers WHERE cust_name = 'Wile E. Coyote';
-     ```
-
-5. **Tip: Omitting Columns**
-   - You can omit columns if:
-     - They allow `NULL` values.
-     - They have **default values** defined.
-
----
-
-## **Step 4: Inserting Multiple Rows**
-1. **Purpose**
-   - Insert **multiple rows** in one `INSERT` statement.
-
-2. **Why Use Multiple Row Insertion?**
-   - It **improves performance** by reducing database operations.
-
-3. **Syntax**
-   ```sql
-   INSERT INTO table_name (column1, column2, ..., columnN)
-   VALUES (value1a, value2a, ..., valueNa),
-          (value1b, value2b, ..., valueNb),
-          ...;
-   ```
-   - Each row is enclosed in parentheses and **separated by commas**.
-
-4. **Example: Inserting Multiple Rows**
-   ```sql
-   INSERT INTO customers (cust_name, cust_address, cust_city, cust_state, cust_zip, cust_country)
-   VALUES ('Pep E. LaPew', '100 Main Street', 'Los Angeles', 'CA', '90046', 'USA'),
-          ('M. Martian', '42 Galaxy Way', 'New York', 'NY', '11213', 'USA');
-   ```
-   - Inserts **two new customers** in a single statement.
-
-5. **Output**
-   - Use `SELECT` to verify:
-     ```sql
-     SELECT * FROM customers WHERE cust_name IN ('Pep E. LaPew', 'M. Martian');
-     ```
-
-6. **Tip: Performance Improvement**
-   - Inserting multiple rows in one statement is **faster** than using multiple `INSERT` statements.
-
----
-
-## **Step 5: Inserting Retrieved Data (INSERT SELECT)**
-1. **Purpose**
-   - Insert the **results of a query** into another table.
-
-2. **Syntax**
-   ```sql
-   INSERT INTO table_name (column1, column2, ..., columnN)
-   SELECT column1, column2, ..., columnN
-   FROM source_table
+   UPDATE table_name
+   SET column_name = new_value
    WHERE condition;
    ```
-   - Combines an `INSERT` statement with a `SELECT` query.
+   - `table_name`: The table to update.
+   - `column_name`: The column to modify.
+   - `new_value`: The new value to assign.
+   - `condition`: Filters the rows to be updated.
 
-3. **Example: Copying Data from Another Table**
+3. **Example: Updating a Single Column**
    ```sql
-   INSERT INTO customers (cust_name, cust_address, cust_city, cust_state, cust_zip, cust_country)
-   SELECT cust_name, cust_address, cust_city, cust_state, cust_zip, cust_country
-   FROM custnew;
+   UPDATE customers
+   SET cust_email = 'elmer@fudd.com'
+   WHERE cust_id = 10005;
    ```
-   - Copies customer data from `custnew` table into the `customers` table.
+   - This updates the `cust_email` for **customer 10005**.
 
-4. **Output**
-   - Use `SELECT` to verify the inserted data:
+4. **Output Example**
+   ```
+   Query OK, 1 row affected
+   ```
+
+5. **Tip: Updating Multiple Columns**
+   - Separate each column update with a comma:
      ```sql
-     SELECT * FROM customers;
+     UPDATE customers
+     SET cust_name = 'The Fudds',
+         cust_email = 'elmer@fudd.com'
+     WHERE cust_id = 10005;
      ```
-
-5. **Tip: Avoiding Duplicate Primary Keys**
-   - Ensure no **duplicate primary keys** are inserted.
-   - Omit auto-increment columns if needed.
+   - This updates both `cust_name` and `cust_email` for **customer 10005**.
 
 ---
 
-## **Step 6: Hands-on Exercises**
+## **Step 3: Updating Multiple Rows**
+1. **Purpose**
+   - Update **multiple rows** that match a condition.
+
+2. **Example: Setting a Default Value for Multiple Rows**
+   ```sql
+   UPDATE customers
+   SET cust_email = 'unknown@example.com'
+   WHERE cust_email IS NULL;
+   ```
+   - This updates all rows where **`cust_email` is NULL**.
+
+3. **Output Example**
+   ```
+   Query OK, 3 rows affected
+   ```
+
+4. **Tip: Be Careful with WHERE Clause**
+   - Without the `WHERE` clause, **all rows** will be updated.
+     ```sql
+     UPDATE customers
+     SET cust_email = 'test@example.com';
+     ```
+   - This **updates every row** in the `customers` table, which is usually **not desired**.
+
+---
+
+## **Step 4: Using Subqueries in UPDATE Statements**
+1. **Purpose**
+   - Use **subqueries** to update columns with data retrieved from another query.
+
+2. **Example: Updating Using Subquery**
+   ```sql
+   UPDATE products
+   SET prod_price = prod_price * 1.1
+   WHERE vend_id = (SELECT vend_id FROM vendors WHERE vend_name = 'Anvils R Us');
+   ```
+   - This **increases prices** by **10%** for all products made by **Anvils R Us**.
+
+3. **Tip: Ensure Subquery Returns a Single Value**
+   - Subqueries in `WHERE` should **return a single value**.
+   - If multiple values are returned, use `IN` instead of `=`:
+     ```sql
+     WHERE vend_id IN (SELECT vend_id FROM vendors WHERE vend_country = 'USA');
+     ```
+
+---
+
+## **Step 5: Deleting Data Using DELETE Statement**
+1. **Purpose**
+   - The `DELETE` statement **removes rows** from a table.
+
+2. **Syntax**
+   ```sql
+   DELETE FROM table_name
+   WHERE condition;
+   ```
+   - `table_name`: The table from which to delete rows.
+   - `condition`: Filters the rows to be deleted.
+
+3. **Example: Deleting a Single Row**
+   ```sql
+   DELETE FROM customers
+   WHERE cust_id = 10005;
+   ```
+   - This deletes the **customer with `cust_id` 10005**.
+
+4. **Output Example**
+   ```
+   Query OK, 1 row affected
+   ```
+
+5. **Tip: Deleting Multiple Rows**
+   - You can **delete multiple rows** by specifying a condition:
+     ```sql
+     DELETE FROM customers
+     WHERE cust_email IS NULL;
+     ```
+   - This **deletes all customers** without an email address.
+
+---
+
+## **Step 6: Deleting All Rows from a Table**
+1. **Purpose**
+   - To **empty** a table but keep its structure intact.
+
+2. **Example: Deleting All Rows Using DELETE**
+   ```sql
+   DELETE FROM customers;
+   ```
+   - This **deletes all rows** in the `customers` table.
+
+3. **Example: Using TRUNCATE for Faster Deletion**
+   ```sql
+   TRUNCATE TABLE customers;
+   ```
+   - `TRUNCATE TABLE` is **faster** because it **resets the table** without logging individual row deletions.
+
+4. **Difference Between DELETE and TRUNCATE**
+   - `DELETE`: **Slower** but allows use of `WHERE` clause.
+   - `TRUNCATE`: **Faster**, but **cannot** use `WHERE`. It **empties the entire table**.
+
+---
+
+## **Step 7: Guidelines for Safe Updates and Deletions**
+1. **Always Use WHERE Clauses**
+   - Avoid updating or deleting all rows **by mistake**.
+   - Double-check the `WHERE` clause **before executing** the query.
+
+2. **Preview Changes with SELECT First**
+   - Before running `UPDATE` or `DELETE`, **preview the affected rows** using `SELECT`:
+     ```sql
+     SELECT * FROM customers WHERE cust_email IS NULL;
+     ```
+
+3. **Use Transactions for Safety**
+   - Use `START TRANSACTION`, `COMMIT`, and `ROLLBACK` to **safeguard data**:
+     ```sql
+     START TRANSACTION;
+     DELETE FROM customers WHERE cust_email IS NULL;
+     ROLLBACK; -- Undo the deletion
+     COMMIT;   -- Make the deletion permanent
+     ```
+
+---
+
+## **Step 8: Hands-on Exercises**
 ### **Objective:**
-- Practice using `INSERT` statements to add data to tables.
+- Practice updating and deleting data safely.
 
 ### **Tasks:**
-1. **Insert a Complete Row**
+1. **Update Email for a Specific Customer**
    ```sql
-   INSERT INTO customers (cust_name, cust_address, cust_city, cust_country)
-   VALUES ('Road Runner', 'Speedway', 'Tucson', 'USA');
+   UPDATE customers
+   SET cust_email = 'new.email@example.com'
+   WHERE cust_id = 10001;
    ```
-2. **Insert Multiple Rows**
+2. **Delete Customers Without Email**
    ```sql
-   INSERT INTO customers (cust_name, cust_address, cust_city, cust_country)
-   VALUES ('Daffy Duck', 'Duck Pond', 'Orlando', 'USA'),
-          ('Porky Pig', 'Farm Road', 'Dallas', 'USA');
+   DELETE FROM customers
+   WHERE cust_email IS NULL;
    ```
-3. **Insert Retrieved Data**
+3. **Increase Prices for a Specific Vendor's Products**
    ```sql
-   INSERT INTO customers (cust_name, cust_address, cust_city, cust_country)
-   SELECT cust_name, cust_address, cust_city, cust_country
-   FROM custnew WHERE cust_country = 'USA';
+   UPDATE products
+   SET prod_price = prod_price * 1.1
+   WHERE vend_id = (SELECT vend_id FROM vendors WHERE vend_name = 'Anvils R Us');
    ```
 
 ---
 
 ## **Conclusion**
-By following this manual, students will learn:
-- How to insert complete and partial rows.
-- How to insert multiple rows efficiently.
-- How to use `INSERT SELECT` to copy data from another table.
+By following this manual, you will learn:
+- How to **safely update** data using `UPDATE`.
+- How to **safely delete** data using `DELETE`.
+- How to **use subqueries** in `UPDATE`.
+- How to **use transactions** to protect data.

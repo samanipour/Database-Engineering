@@ -1,41 +1,39 @@
 # **Inserting Data**
 
 ## **Objective**
-This manual will guide you through **inserting data** into MySQL tables using the `INSERT` statement. It covers:
-- Inserting complete rows
-- Inserting partial rows
-- Inserting multiple rows
-- Inserting data retrieved from another query
+This manual will guide you through **inserting data** into MySQL tables using the `INSERT` statement. Students will learn how to insert complete rows, insert multiple rows, and use `INSERT SELECT` to insert data retrieved from other tables.
 
 ---
 
 ## **Step 1: Understanding Data Insertion**
 1. **What Is Data Insertion?**
-   - `INSERT` is used to **add new rows** to a table in a database.
-   - It is one of the most frequently used statements in MySQL, along with `SELECT`, `UPDATE`, and `DELETE`.
+   - **Inserting data** involves adding **new rows** to a table.
+   - This is done using the `INSERT` statement.
 
-2. **Ways to Insert Data:**
-   - **Complete Rows**: Inserting values for all columns.
-   - **Partial Rows**: Inserting values for specific columns.
-   - **Multiple Rows**: Inserting several rows at once.
-   - **Retrieved Data**: Inserting the result of a `SELECT` query into a table.
+2. **Types of Insertion**
+   - **Complete Row Insertion**: Inserting values for **all columns**.
+   - **Partial Row Insertion**: Inserting values for **some columns**.
+   - **Multiple Row Insertion**: Inserting **multiple rows** in one statement.
+   - **Inserting Retrieved Data**: Using `INSERT SELECT` to insert **query results** into a table.
 
-3. **Security Note:**
-   - The use of `INSERT` can be **restricted** per table or user using MySQL security settings.
+3. **When to Use Data Insertion?**
+   - When **adding new records** to a database, such as:
+     - **Customer information** into a `customers` table.
+     - **New products** into an `inventory` table.
+     - **Order details** into an `orders` table.
 
 ---
 
 ## **Step 2: Inserting Complete Rows**
 1. **Purpose**
-   - This method **inserts a new row** by providing values for **all columns** in the table.
+   - Insert data for **all columns** in a table.
 
 2. **Syntax**
    ```sql
    INSERT INTO table_name
    VALUES (value1, value2, ..., valueN);
    ```
-   - The number of values **must match** the number of columns in the table.
-   - The order of values **must match** the column order in the table definition.
+   - Values **must match the order** of the columns in the table definition.
 
 3. **Example: Inserting a Complete Row**
    ```sql
@@ -50,169 +48,153 @@ This manual will guide you through **inserting data** into MySQL tables using th
            NULL,
            NULL);
    ```
-   - `cust_id` is `NULL` because it is **auto-incremented**.
-   - `cust_contact` and `cust_email` are `NULL` because **no values** are provided.
+   - `NULL` is used for columns that allow it.
+   - MySQL **auto-increments** `cust_id` because it is set as an `AUTO_INCREMENT` column.
 
-4. **Tip: Avoid Using This Method**
-   - This method is **not recommended** because it depends on the **order of columns** in the table.
-   - If the table structure changes, the query **may fail** or **insert incorrect data**.
+4. **Output**
+   - `INSERT` statements **do not generate output**.
+   - Use `SELECT` to **verify the insertion**:
+     ```sql
+     SELECT * FROM customers WHERE cust_name = 'Pep E. LaPew';
+     ```
+
+5. **Tip: Specifying Column Names**
+   - It is **safer** to specify column names to **avoid dependency** on the column order:
+     ```sql
+     INSERT INTO customers (cust_name, cust_address, cust_city, cust_state, cust_zip, cust_country)
+     VALUES ('Pep E. LaPew', '100 Main Street', 'Los Angeles', 'CA', '90046', 'USA');
+     ```
 
 ---
 
-## **Step 3: Inserting Complete Rows with Explicit Column Names**
+## **Step 3: Inserting Partial Rows**
 1. **Purpose**
-   - This method **specifies column names** to ensure the data is inserted into the **correct columns**.
+   - Insert data for **some columns** while leaving others as `NULL` or with default values.
 
 2. **Syntax**
    ```sql
    INSERT INTO table_name (column1, column2, ..., columnN)
    VALUES (value1, value2, ..., valueN);
    ```
-   - Column names are listed in **parentheses**.
-   - The number of columns must **match the number of values**.
+   - Only **specified columns** receive values.
+   - Other columns get **default values** or `NULL`.
 
-3. **Example: Inserting with Column Names**
+3. **Example: Inserting a Partial Row**
    ```sql
-   INSERT INTO customers (cust_name,
-                          cust_address,
-                          cust_city,
-                          cust_state,
-                          cust_zip,
-                          cust_country,
-                          cust_contact,
-                          cust_email)
-   VALUES ('Pep E. LaPew',
-           '100 Main Street',
-           'Los Angeles',
-           'CA',
-           '90046',
-           'USA',
-           NULL,
-           NULL);
+   INSERT INTO customers (cust_name, cust_address, cust_city, cust_country)
+   VALUES ('Wile E. Coyote', 'Desert Road', 'Albuquerque', 'USA');
    ```
-   - Column names are explicitly listed.
-   - This method is **safer** because it is **not affected** by column order changes in the table.
+   - Only 4 columns are specified.
+   - `cust_id` is auto-incremented, and other unspecified columns receive `NULL` or default values.
 
-4. **Tip: Always Use Explicit Column Names**
-   - It increases the **maintainability** of the query.
-   - It reduces the risk of **data misalignment** if the table structure changes.
+4. **Output**
+   - Use `SELECT` to check the new record:
+     ```sql
+     SELECT * FROM customers WHERE cust_name = 'Wile E. Coyote';
+     ```
+
+5. **Tip: Omitting Columns**
+   - You can omit columns if:
+     - They allow `NULL` values.
+     - They have **default values** defined.
 
 ---
 
-## **Step 4: Inserting Partial Rows**
+## **Step 4: Inserting Multiple Rows**
 1. **Purpose**
-   - Allows inserting **only some columns** while leaving others as `NULL` or using **default values**.
+   - Insert **multiple rows** in one `INSERT` statement.
 
-2. **Syntax**
+2. **Why Use Multiple Row Insertion?**
+   - It **improves performance** by reducing database operations.
+
+3. **Syntax**
    ```sql
-   INSERT INTO table_name (column1, column2)
-   VALUES (value1, value2);
-   ```
-   - Only the **specified columns** are populated.
-   - The other columns are set to:
-     - `NULL` (if allowed), or
-     - Default values (if defined in the table schema).
-
-3. **Example: Inserting Partial Row**
-   ```sql
-   INSERT INTO customers (cust_name, cust_email)
-   VALUES ('M. Martian', 'martian@example.com');
-   ```
-   - Only `cust_name` and `cust_email` are provided.
-   - Other columns are set to `NULL` or their default values.
-
-4. **Tip: Omitting Columns**
-   - You can **omit columns** if:
-     - The column is defined as **allowing NULL** values.
-     - The column has a **default value**.
-   - If the column **does not allow NULL** and **no default** is specified, MySQL will **throw an error**.
-
----
-
-## **Step 5: Inserting Multiple Rows**
-1. **Purpose**
-   - Insert **multiple rows** in a single `INSERT` statement for **better performance**.
-
-2. **Syntax**
-   ```sql
-   INSERT INTO table_name (column1, column2)
-   VALUES (value1, value2),
-          (value3, value4),
+   INSERT INTO table_name (column1, column2, ..., columnN)
+   VALUES (value1a, value2a, ..., valueNa),
+          (value1b, value2b, ..., valueNb),
           ...;
    ```
-   - Each set of values is **enclosed in parentheses** and **separated by commas**.
+   - Each row is enclosed in parentheses and **separated by commas**.
 
-3. **Example: Inserting Multiple Rows**
+4. **Example: Inserting Multiple Rows**
    ```sql
    INSERT INTO customers (cust_name, cust_address, cust_city, cust_state, cust_zip, cust_country)
    VALUES ('Pep E. LaPew', '100 Main Street', 'Los Angeles', 'CA', '90046', 'USA'),
           ('M. Martian', '42 Galaxy Way', 'New York', 'NY', '11213', 'USA');
    ```
-   - Two rows are inserted in a **single query**.
+   - Inserts **two new customers** in a single statement.
 
-4. **Tip: Performance Improvement**
-   - This technique improves performance because MySQL processes **multiple rows at once**.
+5. **Output**
+   - Use `SELECT` to verify:
+     ```sql
+     SELECT * FROM customers WHERE cust_name IN ('Pep E. LaPew', 'M. Martian');
+     ```
+
+6. **Tip: Performance Improvement**
+   - Inserting multiple rows in one statement is **faster** than using multiple `INSERT` statements.
 
 ---
 
-## **Step 6: Inserting Data Retrieved from Another Query**
+## **Step 5: Inserting Retrieved Data (INSERT SELECT)**
 1. **Purpose**
-   - Insert data **retrieved by a `SELECT` statement** into another table.
+   - Insert the **results of a query** into another table.
 
 2. **Syntax**
    ```sql
-   INSERT INTO target_table (column1, column2)
-   SELECT column1, column2
+   INSERT INTO table_name (column1, column2, ..., columnN)
+   SELECT column1, column2, ..., columnN
    FROM source_table
    WHERE condition;
    ```
-   - Combines `INSERT` and `SELECT` into one query.
+   - Combines an `INSERT` statement with a `SELECT` query.
 
-3. **Example: Inserting Retrieved Data**
+3. **Example: Copying Data from Another Table**
    ```sql
-   INSERT INTO customers (cust_id, cust_contact, cust_email, cust_name, cust_address, cust_city, cust_state, cust_zip, cust_country)
-   SELECT cust_id, cust_contact, cust_email, cust_name, cust_address, cust_city, cust_state, cust_zip, cust_country
+   INSERT INTO customers (cust_name, cust_address, cust_city, cust_state, cust_zip, cust_country)
+   SELECT cust_name, cust_address, cust_city, cust_state, cust_zip, cust_country
    FROM custnew;
    ```
-   - Inserts data from `custnew` table into `customers` table.
+   - Copies customer data from `custnew` table into the `customers` table.
 
-4. **Tip: Matching Column Positions**
-   - Column names do **not** need to match, but the **column positions** must **align**.
+4. **Output**
+   - Use `SELECT` to verify the inserted data:
+     ```sql
+     SELECT * FROM customers;
+     ```
+
+5. **Tip: Avoiding Duplicate Primary Keys**
+   - Ensure no **duplicate primary keys** are inserted.
+   - Omit auto-increment columns if needed.
 
 ---
 
-## **Step 7: Hands-on Exercises**
+## **Step 6: Hands-on Exercises**
 ### **Objective:**
-- Practice inserting data using the different methods covered.
+- Practice using `INSERT` statements to add data to tables.
 
 ### **Tasks:**
 1. **Insert a Complete Row**
    ```sql
-   INSERT INTO customers
-   VALUES (NULL, 'John Doe', '123 Elm Street', 'Chicago', 'IL', '60614', 'USA', NULL, NULL);
+   INSERT INTO customers (cust_name, cust_address, cust_city, cust_country)
+   VALUES ('Road Runner', 'Speedway', 'Tucson', 'USA');
    ```
-2. **Insert a Partial Row**
+2. **Insert Multiple Rows**
    ```sql
-   INSERT INTO customers (cust_name, cust_email)
-   VALUES ('Jane Doe', 'jane@example.com');
+   INSERT INTO customers (cust_name, cust_address, cust_city, cust_country)
+   VALUES ('Daffy Duck', 'Duck Pond', 'Orlando', 'USA'),
+          ('Porky Pig', 'Farm Road', 'Dallas', 'USA');
    ```
-3. **Insert Multiple Rows**
+3. **Insert Retrieved Data**
    ```sql
-   INSERT INTO customers (cust_name, cust_address, cust_city, cust_state, cust_zip, cust_country)
-   VALUES ('Alice', '456 Oak Street', 'Austin', 'TX', '78701', 'USA'),
-          ('Bob', '789 Pine Street', 'Denver', 'CO', '80203', 'USA');
-   ```
-4. **Insert Retrieved Data**
-   ```sql
-   INSERT INTO customers (cust_name, cust_email)
-   SELECT cust_name, cust_email
-   FROM custnew;
+   INSERT INTO customers (cust_name, cust_address, cust_city, cust_country)
+   SELECT cust_name, cust_address, cust_city, cust_country
+   FROM custnew WHERE cust_country = 'USA';
    ```
 
 ---
 
 ## **Conclusion**
 By following this manual, students will learn:
-- How to use `INSERT` to add new rows to tables.
-- How to insert complete, partial, and multiple rows.
-- How to insert data retrieved from another query.
+- How to insert complete and partial rows.
+- How to insert multiple rows efficiently.
+- How to use `INSERT SELECT` to copy data from another table.

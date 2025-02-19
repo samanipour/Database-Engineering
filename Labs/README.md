@@ -213,7 +213,7 @@ CREATE TABLE productnotes (
 
 ### **Option 1: Using Data Import (Recommended for MySQL Workbench)**
 1. **Download Data Export File**
-   - Download from [Lab Assets]()
+   - Download from [Lab Assets](./Lab-Assets/)
 2. **In MySQL Workbench**:
    - Go to **Administration** → **Data Import/Restore**.
    - Select **Import from Self-Contained File**.

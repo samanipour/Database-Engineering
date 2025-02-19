@@ -222,11 +222,11 @@ CREATE TABLE productnotes (
 
 ### **Option 2: Using SQL Scripts**
 1. **Download Scripts**
-   - Download `create.sql` and `populate.sql` from [Fortabook](http://www.forta.com/books/9780138223021/).
+   - Download `create.sql` and `populate.sql` from [Assets](./Lab-Assets/).
 2. **Create a New Schema**
    ```sql
-   CREATE SCHEMA crashcourse;
-   USE crashcourse;
+   CREATE SCHEMA dblab;
+   USE dblab;
    ```
 3. **Run Scripts**
    - Execute `create.sql` first.

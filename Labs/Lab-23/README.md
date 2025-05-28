@@ -1,8 +1,5 @@
 # **Using Cursors**
 
-## **Objective**
-This manual will guide students through **using cursors** in MySQL, including declaring, opening, fetching, and closing cursors. Students will learn how to loop through result sets row by row using cursors within stored procedures.
-
 ---
 
 ## **Step 1: Understanding Cursors**
